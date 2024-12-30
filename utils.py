@@ -59,21 +59,7 @@ def decoder_for_gpt3(args, input, max_length):
     # openai.api_key = "[Your OpenAI API Key]"
     
     # Specify engine ...
-    # Instruct GPT3
-    if args.model == "gpt3":
-        model = "gpt-3.5-turbo-instruct"
-    elif args.model == "gpt3-medium":
-        model = "gpt-3.5-turbo-instruct"
-    elif args.model == "gpt3-large":
-        model = "gpt-4o"
-    elif args.model == "gpt3-xl":
-        model = "gpt-4o"
-    elif args.model == "text-davinci-001":
-        model = "gpt-4o"
-    elif args.model == "code-davinci-002":
-        model = "gpt-4o"
-    else:
-        raise ValueError("model is not properly defined ...")
+    model = "gpt-4o-mini"
         
     try:
         if "gpt-4" in model or "gpt-3.5-turbo" in model:
@@ -120,7 +106,7 @@ def data_reader(args):
     decoder = json.JSONDecoder()
 
     if args.dataset == "aqua":
-      with open(args.dataset_path) as f:
+      with open(f"training/dataset/AQuA/test.json") as f:
         lines = f.readlines()
         for line in lines:
           json_res = decoder.raw_decode(line)[0]
@@ -131,7 +117,7 @@ def data_reader(args):
           answers.append(json_res["correct"])
   
     elif args.dataset == "gsm8k":
-      with open(args.dataset_path) as f:
+      with open(f"training/dataset/grade-school-math/test.jsonl") as f:
         lines = f.readlines()
         for line in lines:
           json_res = decoder.raw_decode(line)[0]
@@ -139,7 +125,7 @@ def data_reader(args):
           answers.append(json_res["answer"].split("#### ")[-1])
   
     elif args.dataset == "commonsensqa":
-      with open(args.dataset_path) as f:
+      with open(f"training/dataset/CommonsenseQA/dev_rand_split.jsonl") as f:
         lines = f.readlines()
         for line in lines:
           json_res = decoder.raw_decode(line)[0]
@@ -153,7 +139,7 @@ def data_reader(args):
           answers.append(json_res["answerKey"])
 
     elif args.dataset in ("addsub", "multiarith", "singleeq"):
-      with open(args.dataset_path) as f:
+      with open(f"training/dataset/{args.dataset.capitalize()}/{args.dataset.capitalize()}.json") as f:
         json_data = json.load(f)
         for line in json_data:
           q = line["sQuestion"].strip()
@@ -164,7 +150,7 @@ def data_reader(args):
           answers.append(a)
         
     elif args.dataset == "strategyqa":
-      with open(args.dataset_path) as f:
+      with open(f"training/dataset/StrategyQA/task.json") as f:
         json_data = json.load(f)["examples"]
         for line in json_data:
           q = line["input"].strip()
@@ -177,7 +163,7 @@ def data_reader(args):
           answers.append(a)
         
     elif args.dataset == "svamp":
-      with open(args.dataset_path) as f:
+      with open(f"training/dataset/SVAMP/SVAMP.json") as f:
         json_data = json.load(f)
         for line in json_data:
             q = line["Body"].strip() + " " + line["Question"].strip()
@@ -188,7 +174,7 @@ def data_reader(args):
             answers.append(a)
             
     elif args.dataset in ("bigbench_date", "object_tracking"):
-      with open(args.dataset_path) as f:
+      with open(f"training/dataset/{args.dataset.capitalize()}/task.json") as f:
         json_data = json.load(f)
         json_data = json_data["examples"]
         if args.dataset == "bigbench_date":
@@ -222,7 +208,7 @@ def data_reader(args):
           answers.append(a)            
           
     elif args.dataset in ("coin_flip", "last_letters"):
-      with open(args.dataset_path) as f:
+      with open(f"training/dataset/{args.dataset.capitalize()}/{args.dataset}.json") as f:
         json_data = json.load(f)
         json_data = json_data["examples"]
         for line in json_data:

@@ -79,12 +79,22 @@ def validate_answer(question, output):
         return numbers[-1] == correct_answer
     return None
 
+def chat_interface():
+    print("Welcome to the Zero-shot-CoT chat interface!")
+    print("Type 'exit' to quit the chat.")
+    while True:
+        question = input("\nYou: ")
+        if question.lower() == "exit":
+            break
+        print("\nModel:")
+        cot("zero_shot_cot", question)
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Zero-shot-CoT")
 
     parser.add_argument("--max_num_worker", type=int, default=0, help="maximum number of workers for dataloader")
     parser.add_argument(
-        "--model", type=str, default="gpt3-xl", help="model used for decoding. Note that 'gpt3' are the smallest models."
+        "--model", type=str, default="gpt-4o-mini", help="model used for decoding"
     )
     parser.add_argument(
         "--method", type=str, default="auto_cot", choices=["zero_shot", "zero_shot_cot", "few_shot", "few_shot_cot", "auto_cot"], help="method"
@@ -118,3 +128,6 @@ def parse_arguments():
     args.cot_trigger = "Let's think step by step."
 
     return args
+
+if __name__ == "__main__":
+    chat_interface()
