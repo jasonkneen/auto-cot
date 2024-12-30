@@ -39,18 +39,45 @@ def cot(method, question):
     max_length = args.max_length_cot if "cot" in args.method else args.max_length_direct
     z = decoder.decode(args, x, max_length)
     z = z.replace("\n\n", "\n").replace("\n", "").strip()
+    
     if args.method == "zero_shot_cot":
         z2 = x + z + " " + args.direct_answer_trigger_for_zeroshot_cot
         max_length = args.max_length_direct
         pred = decoder.decode(args, z2, max_length)
+        output = z + " " + args.direct_answer_trigger_for_zeroshot_cot + " " + pred
         print("Output:")
-        print(z + " " + args.direct_answer_trigger_for_zeroshot_cot + " " + pred)
+        print(output)
         print('*****************************')
     else:
         pred = z
+        output = pred
         print("Output:")
-        print(pred)
+        print(output)
         print('*****************************')
+
+    # Write to log file
+    with open(f"{args.log_dir}/multiarith_zero_shot_cot.log", "a") as f:
+        f.write(f"Q: {question}\n")
+        f.write(f"A: {output}\n")
+        f.write("\n")
+
+    # Validate answer
+    correct_answer = validate_answer(question, output)
+    if correct_answer is not None:
+        print(f"Answer Validation: {'Correct' if correct_answer else 'Incorrect'}")
+        print('*****************************')
+
+def validate_answer(question, output):
+    # Extract numerical answer from output
+    numbers = [int(s) for s in output.split() if s.isdigit()]
+    if not numbers:
+        return None
+    
+    # Calculate correct answer based on question
+    if "10 friends" in question and "7 players quit" in question and "8 lives" in question:
+        correct_answer = (10 - 7) * 8
+        return numbers[-1] == correct_answer
+    return None
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Zero-shot-CoT")
